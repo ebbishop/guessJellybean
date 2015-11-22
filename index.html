@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Guessing Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+  </head>
+
+  <body>
+    <div class='row spacer'>
+    </div>
+  	<div class="container">
+  		<header class="page-header">
+  			
+   			<h3>Guess the number of jelly beans in the jar!</h3>
+  		</header>
+
+      <div class='row'>
+        <div class='col-sm-offset-3 col-sm-3'>
+          <form class="form-horizontal">
+        		<div class="form-group">
+                <label class="col-sm-5">Your guess</label>
+                <div class='col-sm-7'>
+        	    	  <input type="text" class='form-control' placeholder="1 - 100"></input>
+                </div>
+            </div>
+
+            <div class='form-group'>
+                <div class='col-sm-offset-4 col-sm-8'>
+                  <span class='pull-right'>
+                    <button class='btn btn-md' class='form-control'>Submit Guess</button>
+                  </span>
+                </div>
+            </div>
+          </form>
+        </div>
+        <div class='col-sm-5'>
+            <p class='text-left'>Take a guess! We'll help you out.</p> 
+            <p class='text-left lead'>You have 10 guesses left.</p>
+        </div>
+      </div>
+      <div class='row'>
+        <form>
+          <div class='col-sm-offset-4 col-sm-2'> 
+            <button class='btn btn-default col pull-right'>New Game</button>
+          </div>
+          <div class='col-sm-2'>
+            <button class='btn btn-default pull-left'>Hint</button>
+          </div>
+        </form>
+      </div>
+      <div class='row spacer'>
+      </div>
+  	</div>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="js/bootstrap.js"></script>
+
+
+  </body>
+
+</html>
