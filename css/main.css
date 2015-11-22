@@ -1,0 +1,14 @@
+body{
+  background-image: url('https://upload.wikimedia.org/wikipedia/commons/1/14/JellyBellyBeans.jpg');
+}
+.container{
+	background-color: rgba(255,255,255,1);
+	border-radius: 6px;
+}
+.fill{
+	height: 80%;
+	min-height: 80%;
+}
+.spacer{
+	margin-top: 40px;
+}
