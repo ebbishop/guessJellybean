@@ -1,19 +1,26 @@
 $(document).ready(function(){
 	console.log('doc ready called');
+	newGame();
 	$('#guessForm').on('submit', function(event){
 		submitGuess(event);
 	});
 	$('#submit').on('click', function(event){
 		submitGuess(event);
 	});
+	$('#getHint').on('click', function(event){
+		event.preventDefault();
+		provideHint();
+	})
+	$('#playAgain').on('click', function(event){
+		event.preventDefault();
+		newGame();
+	})
 });
 
 /* **** Global Variables **** */
-// try to elminate these global variables in your project, these are here just to start.
-
-var winningNumber = generateWinningNumber();
-var allPlayersGuesses = [];
-var remainingGuesses = 10;
+var winningNumber;
+var allPlayersGuesses;
+var remainingGuesses;
 
 /* **** Guessing Game Functions **** */
 
@@ -39,7 +46,6 @@ function playersGuessSubmission(){
 	var playersGuessStr = document.getElementById('guess').value;
 	var playersGuess = Number(playersGuessStr);
 	document.getElementById('guess').value = '';
-	console.log('playersGuess is ' + playersGuess);
 	return playersGuess;
 }
 
@@ -87,7 +93,7 @@ function checkGuess(playersGuess){
 	var countdown = '';
 
 	//check for invaid guesses
-	if(playersGuess === NaN || playersGuess>100 || playersGuess<=0){
+	if(isNaN(playersGuess) || playersGuess>100 || playersGuess<=0){
 		//find guesses that aren't numbers or aren't in the 1-100 range
 		newGuess = false;
 		advice = 'Please guess a number between 1 and 100!'
@@ -104,7 +110,7 @@ function checkGuess(playersGuess){
 		}
 	}
 
-	//for valid guesses get the message string
+	//for valid guesses get the message string 
 	if (newGuess){
 		//get advice message
 		advice = guessMessage(playersGuess);
@@ -124,13 +130,67 @@ function checkGuess(playersGuess){
 // Create a provide hint button that provides additional clues to the "Player"
 
 function provideHint(){
-	// add code here
+	var hint = '';
+	var hintArray = [winningNumber];
+	if (remainingGuesses >= 9){
+		hint = 'Make a guess!';
+	}else if(remainingGuesses >= 7){
+		if(winningNumber%2===0){
+			hint = 'There is an even number of jelly beans.';
+		}else{
+			hint = 'There is an odd number of jelly beans.';
+		}
+	}else if(remainingGuesses >= 5){
+		hint = 'There are either '
+		//generate one or more wild geese
+		hintArray = generateWildGoose(2, hintArray);
+		hintArray = randomizeArray(hintArray);
+		for(var i = 0; i < hintArray.length; i++){
+			if(i===hintArray.length-1){
+				hint = hint + ' or ' + hintArray[i] + ' jelly beans.';
+			}else{
+				hint = hint + hintArray[i] + ', ';
+			}
+
+		}
+	}else{
+		hint = 'There were ' + winningNumber + ' jelly beans.';
+	}
+	$('#advice').text(hint);
 }
 
+function generateWildGoose(count, wildGooseArr){
+	for(var j = count; j>0; j--){
+		var wildGoose = Math.floor(Math.random()*100 + 1);
+		for (var i = 0; i < wildGooseArr.length; i++){
+			if (wildGoose === wildGooseArr[i]){
+				generateWildGoose();
+			}
+		}
+		wildGooseArr.push(wildGoose);
+	}
+	return wildGooseArr;
+}
+
+function randomizeArray(myArray){
+	var myIndex = myArray.length;
+	var tempValue;
+	var randomIndex;
+	while(0 !== myIndex){
+		randomIndex = Math.floor(Math.random()*myIndex);
+		myIndex -=1;
+		tempValue = myArray[myIndex];
+		myArray[myIndex] = myArray[randomIndex];
+		myArray[randomIndex] = tempValue;
+	}
+	return myArray;
+}
 // Allow the "Player" to Play Again
 
-function playAgain(){
-	// add code here
+function newGame(){
+	winningNumber = generateWinningNumber();
+	allPlayersGuesses = [];
+	remainingGuesses = 10;
 }
 
 
