@@ -1,5 +1,4 @@
 $(document).ready(function(){
-	console.log('doc ready called');
 	newGame();
 	$('#guessForm').on('submit', function(event){
 		submitGuess(event);
@@ -28,7 +27,7 @@ var remainingGuesses;
 
 function generateWinningNumber(){
 	var winningNumber= Math.floor(Math.random()*100 + 1);
-	console.log('new winningNumber is ' + winningNumber);
+	console.log(winningNumber);
 	return winningNumber;
 }
 
@@ -42,7 +41,6 @@ function submitGuess(event){
 }
 
 function playersGuessSubmission(){
-	console.log('playersGuessSubmission called');
 	var playersGuessStr = document.getElementById('guess').value;
 	var playersGuess = Number(playersGuessStr);
 	document.getElementById('guess').value = '';
@@ -129,6 +127,7 @@ function checkGuess(playersGuess){
 
 // Create a provide hint button that provides additional clues to the "Player"
 
+//add function to prevent a new array of 3 options if one has already been given
 function provideHint(){
 	var hint = '';
 	var hintArray = [winningNumber];
