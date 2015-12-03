@@ -1,7 +1,12 @@
 body{
   background-image: url('https://upload.wikimedia.org/wikipedia/commons/1/14/JellyBellyBeans.jpg');
 }
-
+#gameBoard{
+	position: relative;
+}
+.bean{
+	position: absolute;
+}
 .container{
 	background-color: rgba(255,255,255,1);
 	border-radius: 6px;
