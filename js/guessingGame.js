@@ -1,19 +1,5 @@
 $(document).ready(function(){
 	newGame();
-	$('#guessForm').on('submit', function(event){
-		submitGuess(event);
-	});
-	$('#submit').on('click', function(event){
-		submitGuess(event);
-	});
-	$('#getHint').on('click', function(event){
-		event.preventDefault();
-		provideHint();
-	})
-	$('#playAgain').on('click', function(event){
-		event.preventDefault();
-		newGame();
-	})
 });
 
 /* **** Global Variables **** */
@@ -68,7 +54,7 @@ function guessMessage(playersGuess){
 	var distance = 'Your guess is ';
 	var advice = '';
 	if(diff === 0){
-		distance = distance + 'perfect!!!!';
+		distance = 'You win ' + winningNumber + ' jelly beans!!' ;
 	}else if(diff >= 50){
 		distance = distance + 'at least 50 jelly beans off!';
 	}else if(diff >= 25){
@@ -114,6 +100,7 @@ function checkGuess(playersGuess){
 		advice = guessMessage(playersGuess);
 		if(playersGuess===winningNumber){
 			countdown = '';
+			beanPile(); //call fun stuff
 		}else{
 			//countdown remaining guesses
 			remainingGuesses -= 1;
@@ -121,8 +108,9 @@ function checkGuess(playersGuess){
 			countdown = 'You have ' + remainingGuesses + ' guesses remaining.';
 		}
 	}
-		$('#advice').text(advice);
-		$('#countdown').text(countdown);
+
+	$('#advice').text(advice);
+	$('#countdown').text(countdown);
 }
 
 // Create a provide hint button that provides additional clues to the "Player"
@@ -191,7 +179,46 @@ function newGame(){
 	allPlayersGuesses = [];
 	remainingGuesses = 10;
 }
+	
+var pictures = [
+	'img/yellowBean.gif',
+	'img/greenBean.gif',
+	'img/redBean.gif'
+	]
+
+function beanPile(){
+	beanKeys = Object.keys(pictures);
+	for (var i = 0; i < winningNumber; i++) {
+		var randPicIndex = Math.floor(Math.random()*beanKeys.length);
+		
+		var picSrc = pictures[randPicIndex];
+
+		$('#gameBoard').append('<img id="bean' + i + '" class="bean" src="' + picSrc + '"/>');
+		
+		var left = generateRandomForPlacement($('#gameBoard').width()-50);
+		var top = generateRandomForPlacement($('#gameBoard').height()-40);;
+		$('.bean').last().css({'position':'aboslute', 'top': top + 'px', 'left': left + 'px'});
+	};
+
+}
+function generateRandomForPlacement(max){
+	return Math.floor(Math.random()*(max-(2*max/3))) + (2*max/3);
+}
 
 
 /* **** Event Listeners/Handlers ****  */
-
+	$('#guessForm').on('submit', function(event){
+		submitGuess(event);
+	});
+	$('#submit').on('click', function(event){
+		submitGuess(event);
+	});
+	$('#getHint').on('click', function(event){
+		event.preventDefault();
+		provideHint();
+		beanPile();
+	})
+	$('#playAgain').on('click', function(event){
+		event.preventDefault();
+		newGame();
+	})
