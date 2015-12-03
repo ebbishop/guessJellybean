@@ -181,26 +181,37 @@ function newGame(){
 }
 	
 var pictures = [
-	'img/yellowBean.gif',
-	'img/greenBean.gif',
-	'img/redBean.gif'
+	'yellow',
+	'red',
+	'blue',
+	'green',
+	'purple'
 	]
 
 function beanPile(){
-	beanKeys = Object.keys(pictures);
-	for (var i = 0; i < winningNumber; i++) {
-		var randPicIndex = Math.floor(Math.random()*beanKeys.length);
-		
-		var picSrc = pictures[randPicIndex];
+	var i = 0;
+	function myLoop(){
+		setTimeout(function(){
+			var randPicIndex = Math.floor(Math.random()*pictures.length);
+			var picSrc = pictures[randPicIndex];
 
-		$('#gameBoard').append('<img id="bean' + i + '" class="bean" src="' + picSrc + '"/>');
-		
-		var left = generateRandomForPlacement($('#gameBoard').width()-50);
-		var top = generateRandomForPlacement($('#gameBoard').height()-40);;
-		$('.bean').last().css({'position':'aboslute', 'top': top + 'px', 'left': left + 'px'});
-	};
+			$('#gameBoard').append('<img id="bean' + i + '" class="bean" src="img/' + picSrc + 'Bean.gif"/>');
+			
+			var left = generateRandomForPlacement($('#gameBoard').width()-50);
+			var top = generateRandomForPlacement($('#gameBoard').height()-40);;
+			$('.bean').last().css({'position':'aboslute', 'top': top + 'px', 'left': left + 'px'});
+			i++
+
+			if (i<winningNumber){
+				myLoop();
+			}
+
+		},1000/i)
+	}
+	myLoop();
 
 }
+
 function generateRandomForPlacement(max){
 	return Math.floor(Math.random()*(max-(2*max/3))) + (2*max/3);
 }
