@@ -1,3 +1,5 @@
+//get rid of global variables?
+
 $(document).ready(function(){
 	newGame();
 });
@@ -6,7 +8,7 @@ $(document).ready(function(){
 var winningNumber;
 var allPlayersGuesses;
 var remainingGuesses;
-
+var gameWon = false;
 /* **** Guessing Game Functions **** */
 
 // Generate the Winning Number
@@ -22,8 +24,10 @@ function generateWinningNumber(){
 
 function submitGuess(event){
 	event.preventDefault();
-	var playersGuess = playersGuessSubmission();
-	checkGuess(playersGuess);
+	if (!gameWon){
+		var playersGuess = playersGuessSubmission();
+		checkGuess(playersGuess);
+	}
 }
 
 function playersGuessSubmission(){
@@ -72,34 +76,27 @@ function guessMessage(playersGuess){
 // Check if the Player's Guess is the winning number 
 
 function checkGuess(playersGuess){
-	var newGuess = true;
 	var advice = '';
 	var countdown = '';
 
-	//check for invaid guesses
-	if(isNaN(playersGuess) || playersGuess>100 || playersGuess<=0){
-		//find guesses that aren't numbers or aren't in the 1-100 range
-		newGuess = false;
+	//check for invaid & duplicate guesses	
+	var invalidGuess = checkInvalid(playersGuess);
+	var duplicateGuess = checkDuplicate(playersGuess);
+
+	if(invalidGuess){
 		advice = 'Please guess a number between 1 and 100!'
 		countdown = 'You have ' + remainingGuesses + ' guesses remaining.';
+	}else if(duplicateGuess){
+		advice = 'You already guessed ' + playersGuess + '! Guess something else!';
+		countdown = 'You have ' + remainingGuesses + ' guesses remaining.';
+			
 	}else{
-		//find duplicate guesses
-		for(var i = 0; i < allPlayersGuesses.length; i++){
-			if(playersGuess === allPlayersGuesses[i]){
-				newGuess = false;
-				advice = 'You already guessed ' + playersGuess + '! Guess something else!';
-				countdown = 'You have ' + remainingGuesses + ' guesses remaining.';
-				break;
-			}
-		}
-	}
-
-	//for valid guesses get the message string 
-	if (newGuess){
 		//get advice message
 		advice = guessMessage(playersGuess);
 		if(playersGuess===winningNumber){
+			gameWon = true;
 			countdown = '';
+			$('#hint').text('');
 			beanPile(); //call fun stuff
 		}else{
 			//countdown remaining guesses
@@ -113,39 +110,71 @@ function checkGuess(playersGuess){
 	$('#countdown').text(countdown);
 }
 
-// Create a provide hint button that provides additional clues to the "Player"
+//Check that the guess is a number and is within the appropriate range
+function checkInvalid(playersGuess){
+	if(isNaN(playersGuess) || playersGuess>100 || playersGuess<=0){
+		return true;
+	}else{
+		return false;
+	}
+}
+//Search array of previous guesses for the current guess
+function checkDuplicate(playersGuess){
+	for(var i = 0; i < allPlayersGuesses.length; i++){
+		if(playersGuess === allPlayersGuesses[i]){
+			return true;
+		}else{
+			return false;
+		}
+	}
+}
 
-//add function to prevent a new array of 3 options if one has already been given
+// Create a provide hint button that provides additional clues to the "Player"
+//add function to present a new array of 3 options if one has already been given
 function provideHint(){
 	var hint = '';
 	var hintArray = [winningNumber];
-	if (remainingGuesses >= 9){
-		hint = 'Make a guess!';
-	}else if(remainingGuesses >= 7){
+	if(remainingGuesses==10){
+		hint = 'Make some guesses, then get a hint!';
+	}else if (remainingGuesses >= 7){
+		hint = 'Make some MORE guesses, then get a hint!';
+	}else if(remainingGuesses >= 4){
 		if(winningNumber%2===0){
 			hint = 'There is an even number of jelly beans.';
 		}else{
 			hint = 'There is an odd number of jelly beans.';
 		}
-	}else if(remainingGuesses >= 5){
-		hint = 'There are either '
-		//generate one or more wild geese
-		hintArray = generateWildGoose(2, hintArray);
-		hintArray = randomizeArray(hintArray);
-		for(var i = 0; i < hintArray.length; i++){
-			if(i===hintArray.length-1){
-				hint = hint + ' or ' + hintArray[i] + ' jelly beans.';
-			}else{
-				hint = hint + hintArray[i] + ', ';
-			}
-
+	}else if(remainingGuesses >= 1){
+		if($('#hint').hasClass('hintArray')){
+			hint = $('#hint').text();
+		}else{
+			hint = 'There are either '
+			//generate one or more wild geese
+			hintArray = generateWildGoose(3, hintArray);
+			hint = arrayToSentence(hintArray);
+			$('#hint').addClass('hintArray');
 		}
 	}else{
 		hint = 'There were ' + winningNumber + ' jelly beans.';
 	}
-	$('#advice').text(hint);
+
+	$('#hint').text(hint);
 }
 
+//generates a helpful sentence from the array
+function arrayToSentence(arr){
+	var hint = '';
+	for(var i = 0; i < arr.length; i++){
+		if(i===arr.length-1){
+			hint = hint + ' or ' + arr[i] + ' jelly beans.';
+		}else{
+			hint = hint + arr[i] + ', ';
+		}
+	}	
+	return hint;
+}
+
+//generates array with random numbers, includes the winning number
 function generateWildGoose(count, wildGooseArr){
 	for(var j = count; j>0; j--){
 		var wildGoose = Math.floor(Math.random()*100 + 1);
@@ -156,9 +185,10 @@ function generateWildGoose(count, wildGooseArr){
 		}
 		wildGooseArr.push(wildGoose);
 	}
-	return wildGooseArr;
+	return randomizeArray(wildGooseArr);
 }
 
+//returns array in randomized order
 function randomizeArray(myArray){
 	var myIndex = myArray.length;
 	var tempValue;
@@ -172,22 +202,20 @@ function randomizeArray(myArray){
 	}
 	return myArray;
 }
-// Allow the "Player" to Play Again
 
+// Allow the "Player" to Play Again
 function newGame(){
+	gameWon = false;
 	winningNumber = generateWinningNumber();
 	allPlayersGuesses = [];
 	remainingGuesses = 10;
 }
 	
-var pictures = [
-	'yellow',
-	'red',
-	'blue',
-	'green',
-	'purple'
-	]
 
+//array of pictures for win
+var pictures = ['yellow','red','blue','green','purple','pink'];
+
+//give the winner jelly beans
 function beanPile(){
 	var i = 0;
 	function myLoop(){
@@ -209,9 +237,9 @@ function beanPile(){
 		},1000/i)
 	}
 	myLoop();
-
 }
 
+//generate random numbers for placement of jelly beans
 function generateRandomForPlacement(max){
 	return Math.floor(Math.random()*(max-(2*max/3))) + (2*max/3);
 }
@@ -226,8 +254,9 @@ function generateRandomForPlacement(max){
 	});
 	$('#getHint').on('click', function(event){
 		event.preventDefault();
-		provideHint();
-		beanPile();
+		if(!gameWon){
+			provideHint();
+		}
 	})
 	$('#playAgain').on('click', function(event){
 		event.preventDefault();
